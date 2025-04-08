@@ -1,0 +1,52 @@
+body {
+  background-color: #222222;
+  color: #ffffff;
+}
+
+.navbar {
+  background-color: #000000 !important;
+}
+
+.navbar-brand {
+  color: #1DCD9F !important;
+  font-weight: bold;
+}
+
+.navbar-toggler {
+  border-color: #1DCD9F;
+}
+
+h2 {
+  color: #1DCD9F;
+}
+
+.card {
+  background-color: #000000;
+  border: 1px solid black;
+  transition: transform 0.3s ease;
+}
+
+.card:hover {
+  transform: scale(1.02);
+  border: 1px solid #169976;
+}
+
+.card-img-top {
+  max-height: 200px;
+  object-fit: cover;
+}
+
+.card-title {
+  color: #1DCD9F;
+}
+
+.btn-book {
+  background-color: #1DCD9F;
+  color: #000000;
+  font-weight: 500;
+}
+
+.btn-book:hover {
+  background-color: #169976;
+  color: #ffffff;
+}
