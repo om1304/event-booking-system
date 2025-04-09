@@ -1,6 +1,6 @@
 body {
   background-color: #222222;
-  color: #ffffff;
+  color: white;
 }
 
 .navbar {
@@ -17,12 +17,12 @@ body {
 }
 
 h2 {
-  color: #1DCD9F;
+  color: white;
 }
 
 .card {
   background-color: #000000;
-  border: 1px solid black;
+  border: 1px solid white;
   transition: transform 0.3s ease;
 }
 
@@ -37,6 +37,10 @@ h2 {
 }
 
 .card-title {
+  color: #1DCD9F;
+}
+
+.my-icon-theme {
   color: #1DCD9F;
 }
 

@@ -2,7 +2,7 @@
 session_start();
 require_once('../config/db.php');
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $email = trim($_POST["email"]);
     $password = $_POST["password"];
 
@@ -18,17 +18,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         // Verify password
         if (password_verify($password, $row["password"])) {
+            // Set session variables
             $_SESSION["user_id"] = $row["id"];
             $_SESSION["user_name"] = $row["name"];
             $_SESSION["role"] = $row["role"];
 
+            // Toast message
+            $_SESSION["toast"] = [
+                "type" => "success",
+                "message" => ($row["role"] === "admin") ? "Welcome Admin!" : "Login successful!"
+            ];
+
             // Redirect based on role
             if ($row["role"] === "admin") {
-                $_SESSION["toast"] = ["type" => "success", "message" => "Welcome Admin!"];
                 header("Location: ../admin/dashboard.php");
             } else {
-                $_SESSION["toast"] = ["type" => "success", "message" => "Login successful!"];
-                header("Location: loginUI.php");
+                header("Location: ../index.php");
             }
             exit();
         } else {
@@ -38,6 +43,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $_SESSION["toast"] = ["type" => "warning", "message" => "No account found with this email."];
     }
 
-    header("Location: loginUI.php"); // Common fallback for errors
+    header("Location: loginUI.php"); // Fallback for errors
     exit();
 }
+?>
