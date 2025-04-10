@@ -50,7 +50,7 @@ cd event-booking-system
 
 ### 3️⃣ Configure Database Connection
 
-Open the `config.php` file inside the `includes/` directory and update your DB credentials:
+Open the `db.php` file inside the `config/` directory and update your DB credentials:
 
 ```php
 <?php
