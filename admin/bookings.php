@@ -1,28 +1,88 @@
 <?php
 session_start();
+require '../config/db.php';
 
-// Check if user is logged in and is admin
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
-    $_SESSION['toast'] = [
-        'type' => 'danger',
-        'message' => 'Access denied. Admins only.'
-    ];
-    header("Location: ../auth/loginUI.php");
-    exit;
-}
+// Fetch bookings summary
+$stmt = $conn->prepare("
+  SELECT 
+    e.id AS event_id,
+    e.title AS event_title,
+    e.available_seats,
+    COALESCE(SUM(b.tickets_booked), 0) AS total_booked
+  FROM events e
+  LEFT JOIN bookings b ON e.id = b.event_id
+  GROUP BY e.id, e.title, e.available_seats
+  ORDER BY e.id
+");
+$stmt->execute();
+$result = $stmt->get_result();
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Admin Dashboard</title>
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <title>Bookings Summary</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link rel="stylesheet" href="../styles.css"> <!-- Adjust the path if needed -->
+  <link rel="stylesheet" href="../styles.css"> 
+  <style>
+    body {
+      background-color: #222222;
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    .container {
+      margin-top: 60px;
+    }
+
+    .table {
+      background-color: #1e1e1e;
+      color: white;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .table thead {
+      background-color: #2c2c2c;
+    }
+
+    .table th,
+    .table td {
+      vertical-align: middle;
+    }
+
+    .table-striped tbody tr:nth-of-type(odd) {
+      background-color: #2a2a2a;
+    }
+
+    .table-striped tbody tr:nth-of-type(even) {
+      background-color: #1e1e1e;
+    }
+
+    .table-bordered th,
+    .table-bordered td {
+      border: 1px solid #444;
+    }
+
+    h2 {
+      color: #00ffb3;
+      font-weight: 600;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .table th {
+      background-color: #495057;
+    /* Darker header */
+    color: white;
+    }
+  </style>
 </head>
 <body>
-
-<!-- Dark Navbar -->
+<!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-black">
     <div class="container-fluid">
       <a class="navbar-brand" href="#">EventManager</a>
@@ -73,12 +133,33 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
       </div>
     </div>
   </nav>
+<div class="container">
+  <h2>Bookings Per Event</h2>
 
-<div class="container mt-5">
-  <h1 class="text-center">Welcome, Admin 👋</h1>
-  <!-- Add dashboard stats or quick links here -->
+  <div class="table-responsive">
+    <table class="table table-bordered table-striped text-center">
+      <thead>
+        <tr>
+          <th>Event ID</th>
+          <th>Event Title</th>
+          <th>Tickets Booked</th>
+          <th>Available Seats</th>
+        </tr>
+      </thead>
+      <tbody>
+        <?php while ($row = $result->fetch_assoc()): ?>
+        <tr>
+          <td><?= htmlspecialchars($row['event_id']); ?></td>
+          <td><?= htmlspecialchars($row['event_title']); ?></td>
+          <td><?= $row['total_booked']; ?></td>
+          <td><?= $row['available_seats']; ?></td>
+        </tr>
+        <?php endwhile; ?>
+      </tbody>
+    </table>
+  </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

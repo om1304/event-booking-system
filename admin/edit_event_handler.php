@@ -11,9 +11,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id = intval($_POST['id']);
     $title = trim($_POST['title']);
     $description = trim($_POST['description']);
+    $detail_desc = trim($_POST['detail_desc']);
     $date = $_POST['date'];
+    $duration = isset($_POST['duration']) ? intval($_POST['duration']) : null;
+    $layout = $_POST['layout'] ?? null;
+    $seating = $_POST['seating'] ?? null;
+    $kid_friendly = $_POST['kid_friendly'] ?? 'no';
+    $pet_friendly = $_POST['pet_friendly'] ?? 'no';
     $venue = trim($_POST['venue']);
     $available_seats = (int) $_POST['available_seats'];
+    $price = isset($_POST['price']) ? floatval($_POST['price']) : 0.00;
 
     // Get current image
     $stmt = $conn->prepare("SELECT image FROM events WHERE id = ?");
@@ -26,7 +33,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Upload new image if provided
     $imageName = $currentImage;
     if (isset($_FILES['image']) && $_FILES['image']['error'] === 0) {
-        // Delete old image
         if ($currentImage && file_exists("../uploads/$currentImage")) {
             unlink("../uploads/$currentImage");
         }
@@ -36,8 +42,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Update event
-    $stmt = $conn->prepare("UPDATE events SET title = ?, description = ?, date = ?, venue = ?, available_seats = ?, image = ? WHERE id = ?");
-    $stmt->bind_param("ssssisi", $title, $description, $date, $venue, $available_seats, $imageName, $id);
+    $stmt = $conn->prepare("UPDATE events 
+        SET title = ?, description = ?, detail_desc = ?, date = ?, duration = ?, layout = ?, seating = ?, kid_friendly = ?, pet_friendly = ?, venue = ?, available_seats = ?, image = ?, price = ?
+        WHERE id = ?");
+    $stmt->bind_param("ssssisssssissi", $title, $description, $detail_desc, $date, $duration, $layout, $seating, $kid_friendly, $pet_friendly, $venue, $available_seats, $imageName, $price, $id);
     $stmt->execute();
     $stmt->close();
 
